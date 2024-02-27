@@ -1,5 +1,6 @@
 import pandas as pd
 import scipy.stats as stats
+from statsmodels.tsa.stattools import adfuller
 
 
 ##################################### process the data of Binance and initiate the final df
@@ -154,3 +155,22 @@ print(stats.ttest_ind(a=LIQ_short['LIQ_short_bybit'].dropna(), b=LIQ_long['LIQ_l
 
 print(stats.ttest_ind(a=Data_GMX['leverage_long'].dropna(), b=Data_GMX['leverage_short'].dropna(), equal_var=False))
 print(stats.ttest_ind(a=Data_GNS['leverage_long'].dropna(), b=Data_GNS['leverage_short'].dropna(), equal_var=False))
+
+################################################ ADF test for SI and LIQ
+adf_SI_binance = adfuller(SI['SI_binance'], autolag='AIC')
+adf_SI_bybit = adfuller(SI['SI_bybit'], autolag='AIC')
+adf_SI_GMX = adfuller(SI['SI_GMX'].dropna(), autolag='AIC')
+adf_SI_GNS = adfuller(SI['SI_GNS'].dropna(), autolag='AIC')
+adf_SI_perp = adfuller(SI['SI_perp'].dropna(), autolag='AIC')
+
+adf_LIQ_short_binance = adfuller(LIQ_short['LIQ_short_binance'], autolag='AIC')
+adf_LIQ_short_bybit = adfuller(LIQ_short['LIQ_short_bybit'], autolag='AIC')
+adf_LIQ_short_GMX = adfuller(LIQ_short['LIQ_short_GMX'].dropna(), autolag='AIC')
+adf_LIQ_short_GNS = adfuller(LIQ_short['LIQ_short_GNS'].dropna(), autolag='AIC')
+adf_LIQ_short_perp = adfuller(LIQ_short['LIQ_short_perp'].dropna(), autolag='AIC')
+
+adf_LIQ_long_binance = adfuller(LIQ_long['LIQ_long_binance'], autolag='AIC')
+adf_LIQ_long_bybit = adfuller(LIQ_long['LIQ_long_bybit'], autolag='AIC')
+adf_LIQ_long_GMX = adfuller(LIQ_long['LIQ_long_GMX'].dropna(), autolag='AIC')
+adf_LIQ_long_GNS = adfuller(LIQ_long['LIQ_long_GNS'].dropna(), autolag='AIC')
+adf_LIQ_long_perp = adfuller(LIQ_long['LIQ_long_perp'].dropna(), autolag='AIC')

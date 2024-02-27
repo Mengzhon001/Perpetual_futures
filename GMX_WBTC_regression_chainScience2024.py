@@ -11,8 +11,12 @@ fitted=pd.DataFrame()
 residual=pd.DataFrame()
 
 
-BTC_liquidation = pd.read_csv('/Users/andyma/Desktop/Python /Perpetual_futures/Binance_prep/BNB_finalData.csv', index_col=0)
-BTC_liquidation=BTC_liquidation[BTC_liquidation['time']>='2021-05-01']
+BTC_liquidation = pd.read_csv('BTC_liquidation.csv', index_col=0)
+
+BTC_liquidation['High_leverage']=BTC_liquidation[[ 'More than 50X']].sum(axis=1)
+BTC_liquidation['Median_leverage']=BTC_liquidation[[ '5X - 10X', '10X - 15X', '15X - 20X', '20X - 25X','25X - 30X','30X - 35X', '35X - 40X','40X - 45X', '45X - 50X']].sum(axis=1)
+BTC_liquidation['Low_leverage']=BTC_liquidation[['Less than 1.1X','1.1X - 5X']].sum(axis=1)
+
 ############################# decomposing the expected and unexpected parts
 ### for liquidation long as the initation
 adf_liquidation_long = adfuller(BTC_liquidation['liquidate_long'], autolag='AIC')
@@ -49,12 +53,25 @@ def decompose(Var_name):
 
 ### for liquidation short
 decompose('liquidate_short')
+### for leverage long
+decompose('leverage_long')
+### for leverage short
+decompose('leverage_short')
 ### for trading volume
 decompose('TradingVolume_usd')
 ### for open interest short
 decompose('OpenInterest_short')
 ### for open interest long
 decompose('OpenInterest_long')
+
+### categories of leverage
+
+# low leverage
+decompose('Low_leverage')
+# high leverage
+decompose('High_leverage')
+# Median_leverage
+decompose('Median_leverage')
 
 
 
@@ -63,72 +80,43 @@ firstTerm_inside=0.5*(np.log(BTC_liquidation['high']/BTC_liquidation['low']))**2
 secondTerm_inside=(2*np.log(2)-1)*(np.log(BTC_liquidation['open']/BTC_liquidation['close']))**2
 sigma_hat=(firstTerm_inside-secondTerm_inside)**(1/2)
 
-############################################### regression
-
+####################### for categories of leverage
 ### build dependent var
-y=pd.DataFrame()
-y['sigma']=sigma_hat
-y.drop(index=y.index[-1], axis=0, inplace=True)
+y1=pd.DataFrame()
+y1['sigma']=sigma_hat
+y1.drop(index=y1.index[-1], axis=0, inplace=True)
 
 
 ### build independent var
-X=pd.DataFrame()
+X1=pd.DataFrame()
 # the lagged term of sigma
-X['sigma_lag1']=sigma_hat.shift(-1)
+X1['sigma_lag1']=sigma_hat.shift(-1)
 # expected trading activity
-X['E_OpenInterest_short']=fitted['OpenInterest_short']
-
-X['E_trading_volume']=fitted['TradingVolume_usd']
+X1['E_OpenInterest_short']=fitted['OpenInterest_short']
+X1['E_OpenInterest_long']=fitted['OpenInterest_long']
+# X1['E_trading_volume']=fitted['TradingVolume_usd']
 # unexpected trading activity
-X['U_OpenInterest_short']=residual['OpenInterest_short']
+X1['U_OpenInterest_short']=residual['OpenInterest_short']
+X1['U_OpenInterest_long']=residual['OpenInterest_long']
+# X1['U_trading_volume']=residual['TradingVolume_usd']
 
-X['U_trading_volume']=residual['TradingVolume_usd']
-# expected liquidation
-X['E_liquidate_short']=fitted['liquidate_short']
-X['E_liquidate_long']=fitted['liquidate_long']
+# expected liquidation & leverage
+X1['E_liquidate_short']=fitted['liquidate_short']
+X1['E_liquidate_long']=fitted['liquidate_long']
+X1['E_Low_leverage']=fitted['Low_leverage']
+X1['E_High_leverage']=fitted['High_leverage']
+X1['E_Median_leverage']=fitted['Median_leverage']
+
 # unexpected liquidation & leverage
-X['U_liquidate_short']=residual['liquidate_short']
-X['U_liquidate_long']=residual['liquidate_long']
+X1['U_liquidate_short']=residual['liquidate_short']
+X1['U_liquidate_long']=residual['liquidate_long']
+X1['U_Low_leverage']=fitted['Low_leverage']
+X1['U_High_leverage']=fitted['High_leverage']
+X1['U_Median_leverage']=fitted['Median_leverage']
 
-X = sm.add_constant(X)
+X1 = sm.add_constant(X1, has_constant='add')
 
-X.drop(index=X.index[-1], axis=0, inplace=True)
+X1.drop(index=X1.index[-1], axis=0, inplace=True)
 
-lm = sm.OLS(y, X).fit()
+lm = sm.OLS(y1, X1).fit()
 print(lm.summary())
-
-####################### for IS and LIQ
-
-### build dependent var
-y=pd.DataFrame()
-y['sigma']=sigma_hat
-y.drop(index=y.index[-1], axis=0, inplace=True)
-
-
-### build independent var
-X=pd.DataFrame()
-# the lagged term of sigma
-X['sigma_lag1']=sigma_hat.shift(-1)
-# trading activity
-X['OpenInterest']=BTC_liquidation['OpenInterest_short']
-X['trading_volume']=BTC_liquidation['TradingVolume_usd']
-# SI and LIQ
-X['SI']=(BTC_liquidation['TradingVolume_usd']*1000)/BTC_liquidation['OpenInterest_long']
-X['LIQ_long']=BTC_liquidation['liquidate_long']/BTC_liquidation['OpenInterest_long']
-X['LIQ_short']=BTC_liquidation['liquidate_short']/BTC_liquidation['OpenInterest_short']
-
-
-X = sm.add_constant(X, has_constant='add')
-
-X.drop(index=X.index[-1], axis=0, inplace=True)
-
-lm = sm.OLS(y, X).fit()
-print(lm.summary())
-
-adf_SI = adfuller(X['SI'], autolag='AIC')
-adf_LIQ_long = adfuller(X['LIQ_long'], autolag='AIC')
-adf_LIQ_short = adfuller(X['LIQ_short'], autolag='AIC')
-
-import numpy
-
-x=
