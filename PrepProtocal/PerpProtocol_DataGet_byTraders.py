@@ -90,7 +90,7 @@ tradingVolume_daily=Prep_transaction.groupby(['time'],as_index=False)['exchanged
 tradingVolume_daily.rename(columns = {'exchanged_position_abs':'TradingVolume_usd'}, inplace = True) # so the resulting df represents the dollar amount of liquidated position
 
 ############# load BTC pricing data
-BTC_OHLC=pd.read_csv('/Users/andyma/Desktop/Python /Perpetual_futures/BTC_OHLC_data.csv',index_col=0)
+BTC_OHLC=pd.read_csv('/BTC_pricing/BTC_OHLC_data.csv', index_col=0)
 BTC_OHLC['time'] = pd.to_datetime(BTC_OHLC['time'],unit='s')
 BTC_OHLC['time']=BTC_OHLC['time'].astype('string').str.split(pat=' ', expand=True)[0]
 BTC_OHLC=BTC_OHLC.drop(['volumefrom','volumeto','conversionType','conversionSymbol'], axis=1)

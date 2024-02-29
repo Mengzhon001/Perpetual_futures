@@ -28,7 +28,7 @@ Daily_remove_trans['TokenValue'] = Daily_remove_trans['TokenValue'].astype(float
 Daily_remove=Daily_remove_trans.groupby(['DateTime'],as_index=False)['TokenValue'].sum()
 
 ##################### load the btc pricing data
-BTC_OHLC=pd.read_csv('/Users/andyma/Desktop/Python /Perpetual_futures/BTC_OHLC_data.csv',index_col=0)
+BTC_OHLC=pd.read_csv('/BTC_pricing/BTC_OHLC_data.csv', index_col=0)
 BTC_OHLC['time'] = pd.to_datetime(BTC_OHLC['time'],unit='s')
 BTC_OHLC['time']=BTC_OHLC['time'].astype('string').str.split(pat=' ', expand=True)[0]
 BTC_OHLC=BTC_OHLC.drop(['volumefrom','volumeto','conversionType','conversionSymbol'], axis=1)

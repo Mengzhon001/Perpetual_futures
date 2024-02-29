@@ -1,6 +1,13 @@
 # Perpetual_futures
 This repository contains data and scripts for empirical analysis for traders' behavior on perpetual futures in DEXs and CEXs.
 
+'''
+For each of the exchanges:
+1. Run the script for getting data, e.g., GMX_data_get.py for GMX
+2. Run the script for the regression model, including variable decomposition, e.g., GMX_WBTC_regression.py
+'''
+
+
 This project is licensed under the terms of the MIT license.
 
 Copyright (c) 2023 Mengzhong Ma

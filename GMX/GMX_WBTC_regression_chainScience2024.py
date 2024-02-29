@@ -11,7 +11,7 @@ fitted=pd.DataFrame()
 residual=pd.DataFrame()
 
 
-BTC_liquidation = pd.read_csv('BTC_liquidation.csv', index_col=0)
+BTC_liquidation = pd.read_csv('../BTC_pricing/BTC_liquidation.csv', index_col=0)
 
 BTC_liquidation['High_leverage']=BTC_liquidation[[ 'More than 50X']].sum(axis=1)
 BTC_liquidation['Median_leverage']=BTC_liquidation[[ '5X - 10X', '10X - 15X', '15X - 20X', '20X - 25X','25X - 30X','30X - 35X', '35X - 40X','40X - 45X', '45X - 50X']].sum(axis=1)

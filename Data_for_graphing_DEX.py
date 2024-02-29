@@ -2,7 +2,7 @@ import pandas as pd
 
 ##################################### process data of GMX
 
-Data_GMX = pd.read_csv('BTC_liquidation.csv', index_col=0)
+Data_GMX = pd.read_csv('BTC_pricing/BTC_liquidation.csv', index_col=0)
 Data_GMX.fillna(0, inplace=True)
 
 

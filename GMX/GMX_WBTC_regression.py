@@ -11,7 +11,7 @@ fitted=pd.DataFrame()
 residual=pd.DataFrame()
 
 
-BTC_liquidation = pd.read_csv('BTC_liquidation.csv', index_col=0)
+BTC_liquidation = pd.read_csv('../BTC_pricing/BTC_liquidation.csv', index_col=0)
 
 ############################# decomposing the expected and unexpected parts
 ### for liquidation long as the initation
